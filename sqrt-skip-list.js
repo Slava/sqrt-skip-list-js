@@ -36,9 +36,7 @@ SqrtSkipList.prototype.push = function (item) {
 };
 
 SqrtSkipList.prototype.pop = function () {
-  var last = this.get(this.length - 1);
-  this.remove(this.length - 1);
-  return last;
+  return this.remove(this.length - 1);
 };
 
 // Insert a new item to the position, shifts the rest
@@ -99,6 +97,8 @@ SqrtSkipList.prototype.remove = function (position) {
   this.length--;
   this._updateRefs(position, 'next');
   this._rebalance();
+
+  return node.data;
 };
 
 // Returns item on the given position

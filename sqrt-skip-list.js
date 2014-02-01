@@ -60,7 +60,7 @@ SqrtSkipList.prototype.insert = function (item, position) {
       node = this.getNode(this.length - 1);
       node.next = new SSLNode(item, node, null);
       this.length++;
-      this._updateRefs(position, 'prev');
+      this._updateRefs(position, 'prev', node.next);
     }
     this._rebalance();
     return this.length;
@@ -134,7 +134,8 @@ SqrtSkipList.prototype._rebalance = function () {
 // Contract: is called *every* time one remove/insert happens
 // @param {number} position - first changed position
 // @param {string} direction - 'prev' or 'next' direction of refs' change
-SqrtSkipList.prototype._updateRefs = function (position, direction) {
+// @param {string} [justInserted] - for O(1) optimization on append
+SqrtSkipList.prototype._updateRefs = function (position, direction, justInserted) {
   var blockIndex = position / this.blockSize |0;
   var blockPosition = position % this.blockSize;
 
@@ -149,7 +150,7 @@ SqrtSkipList.prototype._updateRefs = function (position, direction) {
   var optimalBlocksNumber = Math.ceil(this.length / this.blockSize);
   if (optimalBlocksNumber < this.blockRefs.length) this.blockRefs.pop();
   if (optimalBlocksNumber > this.blockRefs.length)
-    this.blockRefs.push(this.getNode(this.length - 1));
+    this.blockRefs.push(justInserted || this.getNode(this.length - 1));
 };
 
 // Internal implementation: a single node

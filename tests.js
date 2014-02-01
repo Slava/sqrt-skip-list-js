@@ -80,3 +80,28 @@ Tinytest.add("sqrt-skip-list - insert somewhere", function (test) {
 
   test.equal(list.blockRefs.length, 3);
 });
+
+Tinytest.add("sqrt-skip-list - remove somewhere", function (test) {
+  function eq(list, array, desc) {
+    test.isTrue(EJSON.equals(list.toArray(), array), desc);
+  }
+
+  var list = new SqrtSkipList();
+  var things = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+  things.forEach(list.push.bind(list));
+  test.equal(list.blockRefs.length, 4);
+
+  var actions = [15, 14, 0, 0, 4, 3, 7, 8, 2, 2];
+
+  eq(list, things);
+
+  actions.forEach(function (action) {
+    var removedA = list.remove(action);
+    var removedB = things.splice(action, 1)[0];
+    eq(list, things);
+    test.equal(removedA, removedB);
+    test.equal(list.blockRefs.length, Math.ceil(things.length / 5));
+  });
+
+});
+

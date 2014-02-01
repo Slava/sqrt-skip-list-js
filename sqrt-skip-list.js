@@ -58,7 +58,7 @@ SqrtSkipList.prototype.pop = function () {
  * Insert a new item to the position, shifts the rest
  * @param {any} item
  * @param {Number} position
- * @returns {any} inserted item
+ * @returns {Number} total number of items
 **/
 SqrtSkipList.prototype.insert = function (item, position) {
   if (position > this.length || position < 0) {

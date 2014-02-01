@@ -54,3 +54,23 @@ Tinytest.add("sqrt-skip-list - pop", function (test) {
 
   test.equal(list.length, 0);
 });
+
+Tinytest.add("sqrt-skip-list - insert somewhere", function (test) {
+  function eq(list, array, desc) {
+    test.isTrue(EJSON.equals(list.toArray(), array), desc);
+  }
+
+  var list = new SqrtSkipList();
+  var things = [1, 2, 3, 4, 5, 6, 7];
+  things.forEach(list.push.bind(list));
+
+  var actions = [[3, 55], [1, 44], [0, 111], [10, 1000], [5, -1], [6, 13]];
+
+  eq(list, things);
+
+  actions.forEach(function (action) {
+    list.insert(action[1], action[0]);
+    things.splice(action[0], 0, action[1]);
+    eq(list, things);
+  });
+});

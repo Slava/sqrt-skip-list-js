@@ -77,4 +77,6 @@ Tinytest.add("sqrt-skip-list - insert somewhere", function (test) {
     things.splice(action[0], 0, action[1]);
     eq(list, things);
   });
+
+  test.equal(list.blockRefs.length, 3);
 });

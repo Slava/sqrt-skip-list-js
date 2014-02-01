@@ -1,15 +1,21 @@
 // There is no point at small block sizes. They only bring more overhead.
 var MINIMAL_BLOCK_SIZE = 5;
 
-// Data structure - doubly linked list with O(sqrt(n))
-// insert/delete/random access/search in sorted list
-// @constructor
+/**
+ * Data structure - doubly linked list with O(sqrt(n))
+ * insert/delete/random access/search in sorted list
+ * @constructor
+**/
 SqrtSkipList = function () {
   this.length = 0;
   this.blockRefs = [];
   this.blockSize = MINIMAL_BLOCK_SIZE;
 };
 
+/**
+ * List converted to plain array
+ * @returns {array}
+**/
 SqrtSkipList.prototype.toArray = function () {
   var result = [];
 
@@ -31,17 +37,29 @@ SqrtSkipList.prototype.forEach = function (iter) {
 // TODO: reverse, shift, unshift, sort, splice
 // TODO: concat, join, slice, toString, toLocaleString, indexOf, lastIndexOf
 
+/**
+ * Appends an item to the end of the list in O(1)
+ * @param {any} item
+ * @returns {any} pushed item
+**/
 SqrtSkipList.prototype.push = function (item) {
   return this.insert(item, this.length);
 };
 
+/**
+ * Removes the last item
+ * @returns {any} removed item
+**/
 SqrtSkipList.prototype.pop = function () {
   return this.remove(this.length - 1);
 };
 
-// Insert a new item to the position, shifts the rest
-// @param {any} item
-// @param {number} position
+/**
+ * Insert a new item to the position, shifts the rest
+ * @param {any} item
+ * @param {Number} position
+ * @returns {any} inserted item
+**/
 SqrtSkipList.prototype.insert = function (item, position) {
   if (position > this.length || position < 0) {
     throw new Error("Can't insert at position " + position
@@ -78,8 +96,11 @@ SqrtSkipList.prototype.insert = function (item, position) {
   return this.length;
 };
 
-// Remove an item, given the position
-// @param {number} position
+/**
+ * Remove an item, given the position
+ * @param {Number} position
+ * @returns {any} removed item
+**/
 SqrtSkipList.prototype.remove = function (position) {
   if (position >= this.length || position < 0) {
     throw new Error('There is nothing to remove on position ' + position);
@@ -101,14 +122,20 @@ SqrtSkipList.prototype.remove = function (position) {
   return node.data;
 };
 
-// Returns item on the given position
-// @param {number} position
+/**
+ * Returns item on the given position
+ * @param {Number} position
+ * @returns {any} item
+**/
 SqrtSkipList.prototype.get = function (position) {
   return this.getNode(position).data;
 };
 
-// Returns the reference of node (internal representation) on the given position
-// @param {number} position
+/**
+ * Returns the reference of node (internal representation) on the given position
+ * @param {Number} position
+ * @returns {SSLNode}
+**/
 SqrtSkipList.prototype.getNode = function (position) {
   if (position >= this.length) {
     throw new Error('There is nothing on position ' + position);
@@ -124,8 +151,10 @@ SqrtSkipList.prototype.getNode = function (position) {
   return node;
 };
 
-// Decides whether to change the blockSize and recalculates the block refs in
-// case of change
+/**
+ * Decides whether to change the blockSize and recalculates the block refs in
+ * case of change
+**/
 SqrtSkipList.prototype._rebalance = function () {
   // if the current block size is so bad, we have twice as many blocks or twice
   // as less blocks, incerease or decrease the block size. But don't let it
@@ -140,11 +169,13 @@ SqrtSkipList.prototype._rebalance = function () {
   }
 };
 
-// Iterates over block refs starting from position and moves them in direction
-// Contract: is called *every* time one remove/insert happens
-// @param {number} position - first changed position
-// @param {string} direction - 'prev' or 'next' direction of refs' change
-// @param {string} [justInserted] - for O(1) optimization on append
+/**
+ * Iterates over block refs starting from position and moves them in direction
+ * Contract: is called *every* time one remove/insert happens
+ * @param {Number} position - first changed position
+ * @param {String} direction - 'prev' or 'next' direction of refs' change
+ * @param {String} [justInserted] - for O(1) optimization on append
+**/
 SqrtSkipList.prototype._updateRefs = function (position, direction, justInserted) {
   var blockIndex = position / this.blockSize |0;
   var blockPosition = position % this.blockSize;
@@ -164,8 +195,10 @@ SqrtSkipList.prototype._updateRefs = function (position, direction, justInserted
 };
 
 
-// Rewrites all block refs based on block size.
-// Called internally every time blockSize is changed
+/**
+ * Rewrites all block refs based on block size.
+ * Called internally every time blockSize is changed
+**/
 SqrtSkipList.prototype._recalculateRefs = function () {
   if (!this.length)
     return;
@@ -181,11 +214,13 @@ SqrtSkipList.prototype._recalculateRefs = function () {
   }
 };
 
-// Internal implementation: a single node
-// @constructor
-// @param {any} data - attached data
-// @param {SSLNode} prev - reference to the previous node or null
-// @param {SSLNode} next - reference to the next node or null
+/**
+ * Internal implementation: a single node
+ * @constructor
+ * @param {any} data - attached data
+ * @param {SSLNode} prev - reference to the previous node or null
+ * @param {SSLNode} next - reference to the next node or null
+**/
 var SSLNode = function (data, prev, next) {
   this.data = data;
   this.prev = prev;

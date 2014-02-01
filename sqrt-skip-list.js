@@ -127,7 +127,17 @@ SqrtSkipList.prototype.getNode = function (position) {
 // Decides whether to change the blockSize and recalculates the block refs in
 // case of change
 SqrtSkipList.prototype._rebalance = function () {
-  // TODO
+  // if the current block size is so bad, we have twice as many blocks or twice
+  // as less blocks, incerease or decrease the block size. But don't let it
+  // drop below MINIMAL_BLOCK_SIZE
+  if (this.blockSize * 2 < this.blockRefs.length ||
+      this.blockSize / 2 > this.blockRefs.length &&
+      this.blockSize > MINIMAL_BLOCK_SIZE) {
+    this.blockSize = Math.floor(Math.sqrt(this.length));
+    if (this.blockSize < MINIMAL_BLOCK_SIZE)
+      this.blockSize = MINIMAL_BLOCK_SIZE;
+    this._recalculateRefs();
+  }
 };
 
 // Iterates over block refs starting from position and moves them in direction
@@ -151,6 +161,24 @@ SqrtSkipList.prototype._updateRefs = function (position, direction, justInserted
   if (optimalBlocksNumber < this.blockRefs.length) this.blockRefs.pop();
   if (optimalBlocksNumber > this.blockRefs.length)
     this.blockRefs.push(justInserted || this.getNode(this.length - 1));
+};
+
+
+// Rewrites all block refs based on block size.
+// Called internally every time blockSize is changed
+SqrtSkipList.prototype._recalculateRefs = function () {
+  if (!this.length)
+    return;
+
+  var node = this.blockRefs[0];
+  this.blockRefs = [];
+
+  for (var i = 0; i < this.length; i++) {
+    if (i % this.blockSize === 0)
+      this.blockRefs.push(node);
+
+    node = node.next;
+  }
 };
 
 // Internal implementation: a single node

@@ -105,3 +105,30 @@ Tinytest.add("sqrt-skip-list - remove somewhere", function (test) {
 
 });
 
+Tinytest.add("sqrt-skip-list - rebalancing triggers", function (test) {
+  var list = new SqrtSkipList();
+  for (var i = 0; i < 50; i++)
+    list.push(i);
+
+  test.length(list.blockRefs, 10);
+  test.equal(list.blockSize, 5);
+
+  list.push(50);
+
+  // block size grows
+  test.length(list.blockRefs, 8);
+  test.equal(list.blockSize, 7);
+
+  while (list.length > 22)
+    list.pop();
+
+  test.length(list.blockRefs, 4);
+  test.equal(list.blockSize, 7);
+
+  list.pop();
+
+  // block size drops but not below 5
+  test.length(list.blockRefs, 5);
+  test.equal(list.blockSize, 5);
+});
+

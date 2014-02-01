@@ -132,3 +132,16 @@ Tinytest.add("sqrt-skip-list - rebalancing triggers", function (test) {
   test.equal(list.blockSize, 5);
 });
 
+Tinytest.add("sqrt-skip-list - lowerBound", function (test) {
+  var list = new SqrtSkipList();
+  for (var i = 0; i < 50; i++)
+    list.push(i);
+
+  var numbersComp = function (a, b) { return a-b; }
+
+  test.equal(list.lowerBoundPosition(4, numbersComp), 4);
+  test.equal(list.lowerBoundPosition(5, numbersComp), 5);
+  test.equal(list.lowerBoundPosition(10, numbersComp), 10);
+  test.equal(list.lowerBoundPosition(22, numbersComp), 22);
+});
+

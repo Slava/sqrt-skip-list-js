@@ -53,6 +53,10 @@ Tinytest.add("sqrt-skip-list - pop", function (test) {
   }
 
   test.equal(list.length, 0);
+
+  list.push({ haha: "can you handle it?" });
+  test.equal(list.length, 1);
+  eq(list, [{ haha: "can you handle it?" }]);
 });
 
 Tinytest.add("sqrt-skip-list - insert somewhere", function (test) {

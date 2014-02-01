@@ -10,6 +10,23 @@ SqrtSkipList = function () {
   this.blockSize = MINIMAL_BLOCK_SIZE;
 };
 
+SqrtSkipList.prototype.toArray = function () {
+  var result = [];
+
+  this.forEach(function (item) { result.push(item) });
+
+  return result;
+};
+
+SqrtSkipList.prototype.forEach = function (iter) {
+  for (var node = this.blockRefs[0], i = 0;
+       i < this.length; node = node.next, i++) {
+    var r = iter(node.data, i, this);
+    if (r === false)
+      break;
+  }
+};
+
 // TODO: for Array compitablitiy to implement:
 // TODO: reverse, shift, unshift, sort, splice
 // TODO: concat, join, slice, toString, toLocaleString, indexOf, lastIndexOf

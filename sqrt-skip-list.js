@@ -53,22 +53,31 @@ SqrtSkipList.prototype.insert = function (item, position) {
   var node;
   if (position === this.length) {
     // first item vs append
-    if (this.length === 0) node = null;
-    else node = this.getNode(this.length - 1);
+    if (this.length === 0) {
+      this.blockRefs = [new SSLNode(item, null, null)];
+      this.length++;
+    } else {
+      node = this.getNode(this.length - 1);
+      node.next = new SSLNode(item, node, null);
+      this.length++;
+      this._updateRefs(position, 'prev');
+    }
+    this._rebalance();
+    return this.length;
   } else {
     node = this.getNode(position);
   }
 
-  var itemNode = new SSLNode(item, node ? node.prev : null, node);
+  var itemNode = new SSLNode(item, node.prev, node);
   if (node.prev) {
     node.prev.next = itemNode;
   }
-  if (node.next) {
-    node.next.prev = itemNode;
-  }
+  node.prev = itemNode;
   this.length++;
+
   this._updateRefs(position, 'prev');
   this._rebalance();
+  return this.length;
 };
 
 // Remove an item, given the position
@@ -129,14 +138,17 @@ SqrtSkipList.prototype._updateRefs = function (position, direction) {
   var blockIndex = position / this.blockSize |0;
   var blockPosition = position % this.blockSize;
 
+  if (blockPosition > 0)
+    blockIndex++;
+
   for (; blockIndex < this.blockRefs.length; blockIndex++) {
     this.blockRefs[blockIndex] = this.blockRefs[blockIndex][direction];
   }
 
   // Create a new block ref or remove an empty block ref if needed
   var optimalBlocksNumber = Math.ceil(this.length / this.blockSize);
-  if (optimalBlocksNumber > this.blockRefs.length) this.blockRefs.pop();
-  if (optimalBlocksNumber < this.blockRefs.length)
+  if (optimalBlocksNumber < this.blockRefs.length) this.blockRefs.pop();
+  if (optimalBlocksNumber > this.blockRefs.length)
     this.blockRefs.push(this.getNode(this.length - 1));
 };
 

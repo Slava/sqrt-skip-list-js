@@ -47,6 +47,19 @@ Returns item on the given position
 
 * **Number** *position* 
 
+## lowerBound(value, comp)
+
+Finds the node an dposition of the first item for which does not compare
+less than the passed value. Will work only if the list is already sorted
+using the same predicate.
+Returns position: -1 and node: null when such item wasn&#39;t found.
+
+### Params: 
+
+* **any** *value* to compare to
+
+* **Function** *comp* predicate on which the list is sorted
+
 ## getNode(position)
 
 Returns the reference of node (internal representation) on the given position

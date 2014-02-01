@@ -131,6 +131,39 @@ SqrtSkipList.prototype.get = function (position) {
   return this.getNode(position).data;
 };
 
+SqrtSkipList.prototype.lowerBoundPosition = function (value, comp) {
+  return this.lowerBound(value, comp).position;
+};
+
+SqrtSkipList.prototype.lowerBoundNode = function (value, comp) {
+  return this.lowerBound(value, comp).node;
+};
+
+/**
+ * Finds the node an dposition of the first item for which does not compare
+ * less than the passed value. Will work only if the list is already sorted
+ * using the same predicate.
+ * Returns position: -1 and node: null when such item wasn't found.
+ * @param {any} value to compare to
+ * @param {Function} comp predicate on which the list is sorted
+ * @returns {Object} position and node reference
+**/
+SqrtSkipList.prototype.lowerBound = function (value, comp) {
+  for (var blockIndex = 0; blockIndex < this.blockRefs.length; blockIndex++) {
+    var node = this.blockRefs[blockIndex];
+    var position = blockIndex * this.blockSize;
+    if (comp(node.data, value) > -1) {
+      while (node.prev && comp(node.prev.data, value) > -1) {
+        node = node.prev;
+        position--;
+      }
+      return {position: position, node: node};
+    }
+  }
+
+  return {position: -1, node: null}
+};
+
 /**
  * Returns the reference of node (internal representation) on the given position
  * @param {Number} position

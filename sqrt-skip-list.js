@@ -128,7 +128,8 @@ SqrtSkipList.prototype.remove = function (position) {
  * @returns {any} item
 **/
 SqrtSkipList.prototype.get = function (position) {
-  return this.getNode(position).data;
+  var node = this.getNode(position);
+  return node && node.data;
 };
 
 SqrtSkipList.prototype.lowerBoundPosition = function (value, comp) {
@@ -143,25 +144,29 @@ SqrtSkipList.prototype.lowerBoundNode = function (value, comp) {
  * Finds the node an dposition of the first item for which does not compare
  * less than the passed value. Will work only if the list is already sorted
  * using the same predicate.
- * Returns position: -1 and node: null when such item wasn't found.
  * @param {any} value to compare to
  * @param {Function} comp predicate on which the list is sorted
  * @returns {Object} position and node reference
 **/
 SqrtSkipList.prototype.lowerBound = function (value, comp) {
-  for (var blockIndex = 0; blockIndex < this.blockRefs.length; blockIndex++) {
-    var node = this.blockRefs[blockIndex];
-    var position = blockIndex * this.blockSize;
-    if (comp(node.data, value) > -1) {
-      while (node.prev && comp(node.prev.data, value) > -1) {
-        node = node.prev;
-        position--;
+  var lastBlockRef = this.blockRefs[0];
+
+  for (var blockIndex = 1; blockIndex < this.blockRefs.length+1; blockIndex++) {
+    var nextBlockHead = this.blockRefs[blockIndex];
+    if (! nextBlockHead || comp(nextBlockHead.data, value) >= 0) {
+      var node = lastBlockRef;
+      var position = (blockIndex - 1) * this.blockSize;
+      while (node && comp(node.data, value) < 0) {
+        node = node.next;
+        position++;
       }
       return {position: position, node: node};
     }
+
+    lastBlockRef = nextBlockHead;
   }
 
-  return {position: -1, node: null}
+  return {position: this.length, node: null}
 };
 
 /**
@@ -170,10 +175,6 @@ SqrtSkipList.prototype.lowerBound = function (value, comp) {
  * @returns {SSLNode}
 **/
 SqrtSkipList.prototype.getNode = function (position) {
-  if (position >= this.length) {
-    throw new Error('There is nothing on position ' + position);
-  }
-
   var blockHead = this.blockRefs[position / this.blockSize |0];
   var blockPosition = position % this.blockSize;
 

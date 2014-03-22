@@ -134,14 +134,26 @@ Tinytest.add("sqrt-skip-list - rebalancing triggers", function (test) {
 
 Tinytest.add("sqrt-skip-list - lowerBound", function (test) {
   var list = new SqrtSkipList();
-  for (var i = 0; i < 50; i++)
-    list.push(i);
+  for (var i = 0; i < 52; i++)
+    list.push(i * 2);
 
   var numbersComp = function (a, b) { return a-b; }
 
-  test.equal(list.lowerBoundPosition(4, numbersComp), 4);
-  test.equal(list.lowerBoundPosition(5, numbersComp), 5);
-  test.equal(list.lowerBoundPosition(10, numbersComp), 10);
-  test.equal(list.lowerBoundPosition(22, numbersComp), 22);
+  // 0  1  2  3  4 |  5  6  7  8  9 10 | 11 ...  50  51
+  // 0  2  4  6  8 | 10 12 14 16 18 20 | 22 ... 100 102
+
+  test.equal(list.lowerBoundPosition(4, numbersComp), 2);
+  test.equal(list.lowerBoundPosition(5, numbersComp), 3);
+  test.equal(list.lowerBoundPosition(10, numbersComp), 5);
+  test.equal(list.lowerBoundPosition(15, numbersComp), 8);
+  test.equal(list.lowerBoundPosition(15, numbersComp), 8);
+  test.equal(list.lowerBoundPosition(16, numbersComp), 8);
+  test.equal(list.lowerBoundPosition(17, numbersComp), 9);
+  test.equal(list.lowerBoundPosition(-20, numbersComp), 0);
+  test.equal(list.lowerBoundPosition(100, numbersComp), 50);
+  test.equal(list.lowerBoundPosition(101, numbersComp), 51);
+  test.equal(list.lowerBoundPosition(102, numbersComp), 51);
+  test.equal(list.lowerBoundPosition(103, numbersComp), 52);
+  test.equal(list.lowerBoundPosition(105, numbersComp), 52);
 });
 
